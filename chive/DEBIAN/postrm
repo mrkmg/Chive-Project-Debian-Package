@@ -1,0 +1,71 @@
+#!/bin/sh
+# postrm script for chive
+
+set -e
+
+lighttpd_remove() {
+	if [ -f /etc/lighttpd/conf-available/50-chive.conf ] ; then
+		rm -f /etc/lighttpd/conf-available/50-chive.conf
+		if which lighty-enable-mod >/dev/null 2>&1 ; then
+			lighty-disable-mod chive
+		else
+			echo "Lighttpd not installed, skipping"
+		fi
+		# See bug #448682
+		if [ -h /etc/lighttpd/conf-enabled/50-chive.conf ] ; then
+		    echo 'Manually deleting lighttpd/chive configuration link'
+		    rm /etc/lighttpd/conf-enabled/50-chive.conf
+		fi
+	fi
+}
+
+apache_remove() {
+	if [ -d /etc/$webserver/conf.d ] && [ -L /etc/$webserver/conf.d/chive.conf ]; then
+		rm -f /etc/$webserver/conf.d/chive.conf
+	fi
+}
+if [ -f /usr/share/debconf/confmodule ]; then
+    . /usr/share/debconf/confmodule
+fi
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+
+	if [ -f /usr/share/debconf/confmodule ]; then
+		db_version 2.0
+
+		db_get chive/reconfigure-webserver
+
+		webservers="$RET"
+
+		for webserver in $webservers; do
+			webserver=${webserver%,}
+			if [ "$webserver" = "lighttpd" ] ; then
+				lighttpd_remove
+			else
+				apache_remove $webserver
+			fi
+			# Redirection of 3 is needed because Debconf uses it and it might 
+			# be inherited by webserver. See bug #446324.
+			if [ -f /etc/init.d/$webserver ] ; then
+				if [ -x /usr/sbin/invoke-rc.d ]; then
+					invoke-rc.d $webserver reload 3>/dev/null || true
+				else
+					/etc/init.d/$webserver reload 3>/dev/null || true
+				fi
+			fi
+		done
+	fi
+fi
+
+
+# Automatically added by dh_installdebconf
+if [ "$1" = purge ] && [ -e /usr/share/debconf/confmodule ]; then
+	. /usr/share/debconf/confmodule
+	db_purge
+fi
+# End automatically added section
+
+
+exit 0
+
+

@@ -1,0 +1,7 @@
+
+Template: chive/reconfigure-webserver
+Type: multiselect
+Choices: apache2, lighttpd
+Description: Web server to reconfigure automatically:
+ Please choose the web server that should be automatically configured
+ to run chive.

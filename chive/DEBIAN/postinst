@@ -1,0 +1,54 @@
+#!/bin/sh
+# postinst script for chive
+
+set -e
+
+lighttpd_install() {
+	if [ ! -f /etc/lighttpd/conf-available/50-chive.conf ] ; then
+		if which lighty-enable-mod >/dev/null 2>&1 ; then
+			ln -s ../../chive/lighttpd.conf /etc/lighttpd/conf-available/50-chive.conf
+			lighty-enable-mod chive fastcgi
+		else
+			echo "Lighttpd not installed, skipping"
+		fi
+	fi
+}
+
+apache_install() {
+	webserver=$1
+	if [ -d /etc/$webserver/conf.d ] && [ ! -e /etc/$webserver/conf.d/chive.conf ]; then
+		ln -s ../../chive/apache.conf /etc/$webserver/conf.d/chive.conf
+	fi
+}
+
+. /usr/share/debconf/confmodule
+
+db_version 2.0
+
+if [ "$1" = "configure" ]; then
+	# Configure Apache
+	db_get chive/reconfigure-webserver
+
+	webservers="$RET"
+
+	for webserver in $webservers; do
+		webserver=${webserver%,}
+		if [ "$webserver" = "lighttpd" ] ; then
+			lighttpd_install
+		else
+			apache_install $webserver
+		fi
+        if [ -f /etc/init.d/$webserver ] ; then
+            if [ -x /usr/sbin/invoke-rc.d ]; then
+                invoke-rc.d $webserver reload 3>/dev/null || true
+            else
+                /etc/init.d/$webserver reload 3>/dev/null || true
+            fi
+        fi
+	done
+fi
+
+
+
+
+exit 0

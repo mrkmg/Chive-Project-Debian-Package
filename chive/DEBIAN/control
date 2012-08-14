@@ -1,0 +1,15 @@
+Package: chive
+Version: 1.1-0
+Architecture: all
+Maintainer: Kevin Gravier <kevin@mrkmg.com>
+Installed-Size: 17136
+Depends: libapache2-mod-php5 | php5-cgi | php5, php5-mysql | php5-mysqli, php5-mcrypt, debconf (>= 0.5) | debconf-2.0
+Recommends: apache2 | lighttpd | httpd, php5-gd, mysql-client
+Suggests: mysql-server
+Section: web
+Priority: extra
+Homepage: http://www.chive-project.com
+Description: Chive is a free, open source, web-based database management tool,
+	designed to bring joy to web developers - with easy administration, super fast
+	UI and state of the art web technologies.
+
