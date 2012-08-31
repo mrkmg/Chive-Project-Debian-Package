@@ -2,7 +2,7 @@
 
 ## Usage
 
-*   Download the latest .deb (currently [chive1.1-0.deb](https://github.com/mrkmg/Chive-Project-Debian-Package/raw/master/chive1.1-0.deb))
+*   Download the latest .deb (currently [chive1.1-0.deb](https://github.com/downloads/mrkmg/Chive-Project-Debian-Package/chive1.1-0.deb))
 *   In a terminal, run `sudo dpkg -i chive1.1-0.deb`
 *   In your preferred browser, navigate to `http://localhost/chive`
 
