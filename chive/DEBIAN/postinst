@@ -46,6 +46,8 @@ if [ "$1" = "configure" ]; then
             fi
         fi
 	done
+
+	chmod 777 /usr/share/chive/assets /usr/share/chive/protected/runtime -R
 fi
 
 
