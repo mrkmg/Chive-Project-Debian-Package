@@ -4,8 +4,13 @@
 function pre($_value) { if($_value === null || $_value === false || $_value === true) { var_dump($_value); } else { echo "<pre>"; print_r($_value); echo "</pre>";	}}
 function predie($_value) { pre($_value); Yii::app()->end(); }
 
+if (!defined('__DIR__'))
+{
+    define('__DIR__', dirname(__FILE__));
+}
+
 // Yii debug mode
-define('YII_DEBUG', false);
+defined('YII_DEBUG') or define('YII_DEBUG', false);
 
 // Chive phar mode
 define('CAP_ENABLED', strpos(__FILE__, "phar://") === 0);
@@ -22,7 +27,7 @@ if(CAP_ENABLED)
 // Load Yii
 require('yii/yii.php');
 
-if(!date_default_timezone_get())
+if(!ini_get('date.timezone'))
 {
 	// Set a fallback timezone if the current php.ini does not contain a default timezone setting.
 	// If the environment is setup correctly, we won't override the timezone.
